@@ -35,3 +35,10 @@ htmlcov/
 # # Migrations (keep __init__.py)
 # **/migrations/*
 # !**/migrations/__init__.py
+
+result.py
+answer.py
+attempt.py
+choice.py
+question.py
+quiz.py
