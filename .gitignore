@@ -39,6 +39,4 @@ htmlcov/
 result.py
 answer.py
 attempt.py
-choice.py
-question.py
 quiz.py
