@@ -1,11 +1,11 @@
 from django.db import models
 
 from apps.core.models import TimeStampedModel
-from .question import Question
+# from .question import Question
 
 class Choice(TimeStampedModel):
     question = models.ForeignKey(
-        Question,
+        "quiz.Question",
         on_delete=models.CASCADE,
         related_name="choices",
 
@@ -15,7 +15,14 @@ class Choice(TimeStampedModel):
     order = models.PositiveSmallIntegerField(default=1,)
 
     class Meta:
-        ordering = ["order"]
+        ordering = ("order",)
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=("question", "order"),
+                name="unique_choice_order_per_question",
+            )
+        ]        
 
     def __str__(self):
         return self.text

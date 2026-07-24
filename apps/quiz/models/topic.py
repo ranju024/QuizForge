@@ -6,7 +6,7 @@ from .subject import Subject
 
 class Topic(TimeStampedModel):
     subject = models.ForeignKey(
-        Subject,
+        "quiz.Subject",
         on_delete=models.CASCADE,
         related_name="topics",
     )
