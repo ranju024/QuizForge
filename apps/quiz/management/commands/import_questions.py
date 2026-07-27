@@ -10,11 +10,6 @@ from apps.quiz.models import (
     Choice,
 )
 
-from apps.quiz.choices import (
-    Difficulty,
-    QuestionType,
-)
-
 
 class Command(BaseCommand):
     help = "Import questions from Excel"
@@ -39,7 +34,8 @@ class Command(BaseCommand):
             engine="openpyxl",
         )
 
-        imported = 0
+        created_count = 0
+        updated_count = 0
 
         for _, row in questions_df.iterrows():
 
@@ -55,19 +51,26 @@ class Command(BaseCommand):
                 name=row["topic"],
             )
 
-            question = Question.objects.create(
-                topic=topic,
-                text=row["question"],
-                code_snippet="" if pd.isna(row["code"]) else row["code"],
-                explanation="" if pd.isna(row["explanation"]) else row["explanation"],
-                difficulty=row["difficulty"],
-                question_type=row["question_type"],
-                marks=int(row["marks"]),
+            question, created = Question.objects.update_or_create(
+                external_id=row["question_id"],
+                defaults={
+                    "topic": topic,
+                    "text": row["question"],
+                    "code_snippet": "" if pd.isna(row["code"]) else row["code"],
+                    "explanation": "" if pd.isna(row["explanation"]) else row["explanation"],
+                    "difficulty": row["difficulty"],
+                    "question_type": row["question_type"],
+                    "marks": int(row["marks"]),
+                    "is_active": True,
+                },
             )
+
+            question.choices.all().delete()
 
             current_choices = choices_df[
                 choices_df["question_id"] == row["question_id"]
             ]
+
 
             for _, c in current_choices.iterrows():
 
@@ -78,10 +81,13 @@ class Command(BaseCommand):
                     order=int(c["order"]),
                 )
 
-            imported += 1
+            if created:
+                created_count += 1
+            else:
+                updated_count += 1
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Imported {imported} questions."
+                f"Created : {created_count}, Updated : {updated_count}"
             )
         )

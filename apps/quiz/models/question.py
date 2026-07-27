@@ -27,6 +27,12 @@ class Question(TimeStampedModel):
     )
     marks = models.PositiveSmallIntegerField(default=1,)
     is_active = models.BooleanField(default=True,)
+    external_id = models.CharField(
+        max_length=50,
+        unique=True,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         ordering = ["topic", "id"]

@@ -15,11 +15,11 @@ class Choice(TimeStampedModel):
     order = models.PositiveSmallIntegerField(default=1,)
 
     class Meta:
-        ordering = ("order",)
+        ordering = ["question", "order"]
 
         constraints = [
             models.UniqueConstraint(
-                fields=("question", "order"),
+                fields=["question", "order"],
                 name="unique_choice_order_per_question",
             )
         ]        
