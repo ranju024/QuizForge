@@ -3,6 +3,8 @@ from django.contrib import admin
 from apps.quiz.models import Quiz
 
 
+# this tells Django, "When showing Questions in the admin panel, use these settings."
+
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
     list_display = (

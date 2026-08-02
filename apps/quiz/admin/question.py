@@ -11,6 +11,8 @@ class ChoiceInline(admin.TabularInline):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
+    # When someone opens /admin/quiz/question/, 
+    # show these text, difficulty, ... columns.
     list_display = (
         "text",
         "topic",

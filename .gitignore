@@ -37,6 +37,5 @@ htmlcov/
 # !**/migrations/__init__.py
 
 result.py
-answer.py
-attempt.py
+
 
