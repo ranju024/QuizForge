@@ -26,3 +26,9 @@ class QuizAdmin(admin.ModelAdmin):
     filter_horizontal = (
         "topics",
     )
+
+    readonly_fields = (
+        "uuid",
+        "created_at",
+        "updated_at",
+    )

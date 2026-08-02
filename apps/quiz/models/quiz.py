@@ -13,14 +13,17 @@ class Quiz(TimeStampedModel):
         Topic,
         related_name="quizzes",
     )
+    
+    duration_minutes = models.PositiveIntegerField(default=30, help_text="Duration in minutes",)
 
-    duration_minutes = models.PositiveIntegerField(default=30)
+    total_questions = models.PositiveIntegerField(default=10)
 
-    total_questions = models.PositiveIntegerField(default=20)
-
-    pass_percentage = models.PositiveSmallIntegerField(default=50)
+    pass_percentage = models.PositiveSmallIntegerField(default=40)
 
     is_active = models.BooleanField(default=True)
+    randomize_questions = models.BooleanField(default=True)
+    randomize_choices = models.BooleanField(default=True,)
+    is_active = models.BooleanField(default=True,)
 
     class Meta:
         ordering = ["title"]
