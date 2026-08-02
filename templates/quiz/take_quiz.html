@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ attempt.quiz.title }}
+{% endblock %}
+
+{% block content %}
+
+<h2>{{ attempt.quiz.title }}</h2>
+<p>Question {{ question_no }} of {{ total_questions }}</p>
+<hr>
+<h3>{{ question.text }}</h3>
+
+{% if question.code_snippet %}
+<pre>{{ question.code_snippet }}</pre>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">
+        Submit
+    </button>
+</form>
+
+{% endblock %}

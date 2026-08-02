@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+Quizzes
+{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    Available Quizzes
+</h1>
+
+<div class="row">
+{% for quiz in quizzes %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>{{ quiz.title }}</h4>
+                <p>{{ quiz.description }}</p>
+                <a href="{% url 'quiz:detail' quiz.pk %}" class="btn btn-primary" >
+                    View Quiz
+                </a>
+            </div>
+        </div>
+    </div>
+
+{% empty %}
+<p>No quizzes available.</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}
