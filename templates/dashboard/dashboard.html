@@ -6,14 +6,43 @@ Dashboard
 
 {% block content %}
 
-<h1>Dashboard</h1>
+<h1>Student Dashboard</h1>
 
 <hr>
 
 <h2>Statistics</h2>
 
-<p>Total Attempts: {{ total_attempts }}</p>
-<p>Completed Quizzes: {{ completed_count }}</p>
+<table border="1" cellpadding="8">
+    <tr>
+        <td>Total Quizzes</td>
+        <td>{{ quiz_count }}</td>
+    </tr>
+
+    <tr>
+        <td>Total Attempts</td>
+        <td>{{ total_attempts }}</td>
+    </tr>
+
+    <tr>
+        <td>Completed Attempts</td>
+        <td>{{ completed_count }}</td>
+    </tr>
+
+    <tr>
+        <td>Passed Attempts</td>
+        <td>{{ passed_count }}</td>
+    </tr>
+
+    <tr>
+        <td>Average Score</td>
+        <td>{{ average_score|floatformat:2 }}%</td>
+    </tr>
+
+    <tr>
+        <td>Best Score</td>
+        <td>{{ best_score|floatformat:2 }}%</td>
+    </tr>
+</table>
 
 <hr>
 
@@ -41,7 +70,7 @@ Continue
 
 {% else %}
 
-<p>No quiz in progress.</p>
+<p>No quiz is currently in progress.</p>
 
 {% endif %}
 
@@ -49,23 +78,38 @@ Continue
 
 <h2>Available Quizzes</h2>
 
-<ul>
+<table border="1" cellpadding="8">
+
+<tr>
+    <th>Quiz</th>
+    <th>Questions</th>
+    <th>Duration</th>
+    <th>Action</th>
+</tr>
 
 {% for quiz in available_quizzes %}
 
-<li>
+<tr>
+
+<td>{{ quiz.title }}</td>
+
+<td>{{ quiz.total_questions }}</td>
+
+<td>{{ quiz.duration_minutes }} min</td>
+
+<td>
 
 <a href="{% url 'quiz:detail' quiz.pk %}">
-
-{{ quiz.title }}
-
+Open
 </a>
 
-</li>
+</td>
+
+</tr>
 
 {% endfor %}
 
-</ul>
+</table>
 
 <hr>
 
@@ -76,10 +120,11 @@ Continue
 <table border="1" cellpadding="8">
 
 <tr>
-<th>Quiz</th>
-<th>Score</th>
-<th>Result</th>
-<th></th>
+    <th>Quiz</th>
+    <th>Score</th>
+    <th>Percentage</th>
+    <th>Status</th>
+    <th>Action</th>
 </tr>
 
 {% for attempt in completed_attempts %}
@@ -90,16 +135,14 @@ Continue
 
 <td>{{ attempt.score }}</td>
 
+<td>{{ attempt.percentage }}%</td>
+
 <td>
 
 {% if attempt.passed %}
-
 Passed
-
 {% else %}
-
 Failed
-
 {% endif %}
 
 </td>
@@ -107,9 +150,7 @@ Failed
 <td>
 
 <a href="{% url 'quiz:result' attempt.pk %}">
-
-View
-
+View Result
 </a>
 
 </td>
