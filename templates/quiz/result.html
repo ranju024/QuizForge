@@ -21,8 +21,21 @@ Result
 
 <p>
     <strong>Percentage:</strong>
+    <div class="mb-4">
 
-    {{ percentage }}%
+        <div class="progress" style="height: 25px;">
+
+            <div
+                class="progress-bar"
+                role="progressbar"
+                style="width: {{ percentage }}%;"
+            >
+                {{ percentage }}%
+            </div>
+
+        </div>
+
+    </div>
 </p>
 
 <p>

@@ -4,7 +4,7 @@ from django.views import View
 
 from apps.quiz.forms import AnswerForm
 from apps.quiz.models import QuizAttempt
-from apps.quiz.services import (AnswerService, ResultService, )
+from apps.quiz.services import (AnswerService, ResultService, NavigationService, TimerService, )
 
 class TakeQuizView(LoginRequiredMixin, View):
     def get(self, request, attempt_id, question_no):
@@ -13,25 +13,30 @@ class TakeQuizView(LoginRequiredMixin, View):
             pk=attempt_id,
             user=request.user,
         )
-        if attempt.status == "completed":
+        
+        question = NavigationService.get_questions(
+            attempt,
+            question_no,
+        )
+
+        if TimerService.is_expired(attempt):
+            ResultService.finish_attempt(
+                attempt,
+            )
+
             return redirect(
                 "quiz:result",
                 pk=attempt.pk,
             )
-        questions = list(
-            attempt.questions.all()
-        )
-        answered_count = attempt.answers.count()
-        expected_question = answered_count + 1
-
-        if question_no != expected_question:
-            return redirect(
-                "quiz:take",
-                attempt_id=attempt.pk,
-                question_no=expected_question,
+        remaining_seconds = (
+            TimerService.remaining_seconds(
+                attempt,
             )
+        )
+        
+        if not hasattr(question, "id"):
+            return question
 
-        question = questions[question_no - 1]
         form = AnswerForm(
             question=question,
         )
@@ -44,7 +49,8 @@ class TakeQuizView(LoginRequiredMixin, View):
                 "question": question,
                 "form": form,
                 "question_no": question_no,
-                "total_questions": len(questions),
+                "total_questions": attempt.questions.count(),
+                "remaining_seconds": remaining_seconds,
             },
         )
         
@@ -54,19 +60,28 @@ class TakeQuizView(LoginRequiredMixin, View):
             pk=attempt_id,
             user=request.user,
         )
-        if attempt.status == "completed":
+        if TimerService.is_expired(attempt):
+            ResultService.finish_attempt(
+                attempt,
+            )
+
             return redirect(
                 "quiz:result",
                 pk=attempt.pk,
             )
-        questions = list(
-            attempt.questions.all()
+        question = NavigationService.get_questions(
+            attempt,
+            question_no,
         )
-        question = questions[question_no - 1]
+
+        if not hasattr(question, "id"):
+            return question
+
         form = AnswerForm(
             request.POST,
             question=question,
         )
+
         if not form.is_valid():
             return render(
                 request,
@@ -76,10 +91,12 @@ class TakeQuizView(LoginRequiredMixin, View):
                     "question": question,
                     "form": form,
                     "question_no": question_no,
-                    "total_questions": len(questions),
+                    "total_questions": attempt.questions.count(),
                 },
             )
+
         selected = form.cleaned_data["choices"]
+
         AnswerService.submit_answer(
             attempt=attempt,
             question=question,
@@ -89,14 +106,15 @@ class TakeQuizView(LoginRequiredMixin, View):
                 else [choice.id for choice in selected]
             ),
         )
-        if question_no == len(questions):
-            ResultService.finish_attempt(
-                attempt,
-            )
+
+        if question_no == attempt.questions.count():
+            ResultService.finish_attempt(attempt)
+
             return redirect(
                 "quiz:result",
-                attempt.pk,
+                pk=attempt.pk,
             )
+
         return redirect(
             "quiz:take",
             attempt_id=attempt.pk,

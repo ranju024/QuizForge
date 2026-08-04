@@ -3,3 +3,5 @@ from .attempt_service import AttemptService
 from .answer_service import AnswerService
 from .result_service import ResultService
 from .question_service import QuestionService
+from .navigation_service import NavigationService
+from .timer_service import TimerService

@@ -7,6 +7,11 @@
 {% block content %}
 
 <h2>{{ attempt.quiz.title }}</h2>
+
+<div id="timer">
+    Time Left:
+    <span id="countdown"></span>
+</div>
 <p>Question {{ question_no }} of {{ total_questions }}</p>
 <hr>
 <h3>{{ question.text }}</h3>
@@ -22,5 +27,54 @@
         Submit
     </button>
 </form>
+<p style="color:red;">
+    Do not refresh or leave this page while taking the quiz.
+</p>
 
+<script>
+const form = document.querySelector("form");
+
+let seconds = {{ remaining_seconds }};
+
+function beforeUnload(e) {
+    e.preventDefault();
+    e.returnValue = "";
+}
+
+window.addEventListener("beforeunload", beforeUnload);
+
+// Remove warning on normal form submission
+form.addEventListener("submit", function () {
+    window.removeEventListener(
+        "beforeunload",
+        beforeUnload,
+    );
+});
+
+
+function updateTimer() {
+
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+
+    document.getElementById("countdown").textContent =
+        `${min}:${sec.toString().padStart(2, "0")}`;
+
+    if (seconds <= 0) {
+        // window.removeEventListener(
+        //     "beforeunload",
+        //     beforeUnload
+        // );
+
+        form.requestSubmit();
+        return;
+    }
+
+    seconds--;
+}
+
+updateTimer();
+
+setInterval(updateTimer, 1000);
+</script>
 {% endblock %}
