@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Attempts
+{% endblock %}
+
+{% block content %}
+
+<h1>My Attempts</h1>
+
+<table border="1" cellpadding="8">
+
+<tr>
+    <th>Quiz</th>
+    <th>Score</th>
+    <th>Percentage</th>
+    <th>Status</th>
+    <th>Started</th>
+    <th>Action</th>
+</tr>
+
+{% for attempt in attempts %}
+
+<tr>
+
+<td>{{ attempt.quiz.title }}</td>
+
+<td>{{ attempt.score }}</td>
+
+<td>{{ attempt.percentage }}%</td>
+
+<td>{{ attempt.get_status_display }}</td>
+
+<td>{{ attempt.started_at }}</td>
+
+<td>
+
+{% if attempt.status == "completed" %}
+
+<a href="{% url 'quiz:result' attempt.pk %}">
+View Result
+</a>
+
+{% else %}
+
+<a href="{% url 'quiz:take' attempt.pk attempt.answers.count|add:1 %}">
+Continue
+</a>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6">
+No attempts found.
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% if is_paginated %}
+
+<br>
+
+{% if page_obj.has_previous %}
+<a href="?page={{ page_obj.previous_page_number }}">
+Previous
+</a>
+{% endif %}
+
+Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">
+Next
+</a>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}
