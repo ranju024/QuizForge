@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1>Dashboard</h1>
+
+<hr>
+
+<h2>Statistics</h2>
+
+<p>Total Attempts: {{ total_attempts }}</p>
+<p>Completed Quizzes: {{ completed_count }}</p>
+
+<hr>
+
+<h2>Continue Quiz</h2>
+
+{% if active_attempts %}
+
+<ul>
+
+{% for attempt in active_attempts %}
+
+<li>
+
+<strong>{{ attempt.quiz.title }}</strong>
+
+<a href="{% url 'quiz:take' attempt.pk attempt.answers.count|add:1 %}">
+Continue
+</a>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p>No quiz in progress.</p>
+
+{% endif %}
+
+<hr>
+
+<h2>Available Quizzes</h2>
+
+<ul>
+
+{% for quiz in available_quizzes %}
+
+<li>
+
+<a href="{% url 'quiz:detail' quiz.pk %}">
+
+{{ quiz.title }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+<hr>
+
+<h2>Recent Attempts</h2>
+
+{% if completed_attempts %}
+
+<table border="1" cellpadding="8">
+
+<tr>
+<th>Quiz</th>
+<th>Score</th>
+<th>Result</th>
+<th></th>
+</tr>
+
+{% for attempt in completed_attempts %}
+
+<tr>
+
+<td>{{ attempt.quiz.title }}</td>
+
+<td>{{ attempt.score }}</td>
+
+<td>
+
+{% if attempt.passed %}
+
+Passed
+
+{% else %}
+
+Failed
+
+{% endif %}
+
+</td>
+
+<td>
+
+<a href="{% url 'quiz:result' attempt.pk %}">
+
+View
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p>No completed attempts.</p>
+
+{% endif %}
+
+{% endblock %}

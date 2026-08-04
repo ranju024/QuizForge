@@ -7,14 +7,111 @@
 {% block content %}
 
 <h1>{{ quiz.title }}</h1>
+
 <p>{{ quiz.description }}</p>
-<p>Duration: {{ quiz.duration_minutes }} minutes</p>
-<p>Total Questions: {{ quiz.total_questions }}</p>
-<form method="post" action="{% url 'quiz:start' quiz.pk %}">
-    {% csrf_token %}
-    <button type="submit">
-        Start Quiz
-    </button>
-</form>
+
+<p>
+    <strong>Duration:</strong>
+    {{ quiz.duration }} minutes
+</p>
+
+<p>
+    <strong>Total Questions:</strong>
+    {{ quiz.total_questions }}
+</p>
+
+<hr>
+
+{% if user.is_authenticated %}
+
+    {% if active_attempt %}
+
+        <a href="{% url 'quiz:take' active_attempt.pk active_attempt.answers.count|add:1 %}">
+            <button>
+                Continue Quiz
+            </button>
+        </a>
+
+    {% else %}
+
+        <form
+            method="post"
+            action="{% url 'quiz:start' quiz.pk %}"
+        >
+            {% csrf_token %}
+
+            <button type="submit">
+                Start New Attempt
+            </button>
+
+        </form>
+
+    {% endif %}
+
+    <hr>
+
+    <h3>Your Attempts</h3>
+
+    {% if attempts %}
+
+        <table border="1" cellpadding="8">
+
+            <tr>
+                <th>#</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Started</th>
+                <th>Action</th>
+            </tr>
+
+            {% for attempt in attempts %}
+
+            <tr>
+
+                <td>{{ forloop.counter }}</td>
+
+                <td>
+                    {{ attempt.score }}
+                </td>
+
+                <td>
+                    {{ attempt.get_status_display }}
+                </td>
+
+                <td>
+                    {{ attempt.started_at }}
+                </td>
+
+                <td>
+
+                    {% if attempt.status == "completed" %}
+
+                        <a href="{% url 'quiz:result' attempt.pk %}">
+                            View Result
+                        </a>
+
+                    {% else %}
+
+                        <a href="{% url 'quiz:take' attempt.pk attempt.answers.count|add:1 %}">
+                            Continue
+                        </a>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>No attempts yet.</p>
+
+    {% endif %}
+
+{% endif %}
 
 {% endblock %}

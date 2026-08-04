@@ -16,7 +16,7 @@ class AttemptService:
         if attempt:
             return attempt
         
-        attempt = QuizAttempt.objects.create(user=user, quiz=quiz,)
+        attempt = QuizAttempt.objects.create(user=user, quiz=quiz, status=AttemptStatus.IN_PROGRESS,)
         questions = QuizGenerator.get_questions(quiz)
         attempt.questions.set(questions)
 
