@@ -10,5 +10,6 @@ class StartQuizView(LoginRequiredMixin, View):
     def post(self, request, pk):
         quiz = get_object_or_404(Quiz, pk=pk, is_active=True,)
         attempt = AttemptService.start_quiz(request.user, quiz, )
-        return redirect("quiz:take", attempt_id=attempt.pk, question_no=1,)
+        answered_count = attempt.answers.count()
+        return redirect("quiz:take", attempt_id=attempt.pk, question_no=answered_count + 1,)
     

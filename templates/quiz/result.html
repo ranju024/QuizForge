@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}
+Result
+{% endblock %}
+
+{% block content %}
+
+<h2>{{ attempt.quiz.title }}</h2>
+
+<hr>
+
+<h3>Quiz Completed 🎉</h3>
+
+<p>
+    <strong>Score:</strong>
+    <strong>{{ obtained_marks }}</strong>
+    /
+    <strong>{{ total_marks }}</strong>
+</p>
+
+<p>
+    <strong>Percentage:</strong>
+
+    {{ percentage }}%
+</p>
+
+<p>
+    <strong>Status:</strong>
+
+    {% if attempt.passed %}
+
+    <span class="badge bg-success">
+        Passed
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+        Failed
+    </span>
+
+    {% endif %}
+</p>
+<hr>
+
+<h3>Answer Review</h3>
+
+{% for answer in answers %}
+
+<div class="card mb-3 border-{% if answer.is_correct %}success{% else %}danger{% endif %}">
+    <div class="card-body">
+
+        <h5>
+            {{ forloop.counter }}.
+            {{ answer.question.text }}
+        </h5>
+
+        <p>
+
+            {% if answer.is_correct %}
+                ✅ Correct
+            {% else %}
+                ❌ Incorrect
+            {% endif %}
+
+        </p>
+
+        <strong>Your Answer:</strong>
+
+        <ul>
+
+        {% for choice in answer.selected_choices.all %}
+
+            <li>{{ choice.text }}</li>
+
+        {% empty %}
+
+            <li>No answer selected</li>
+
+        {% endfor %}
+
+        </ul>
+
+        <strong>Correct Answer:</strong>
+
+        <ul>
+
+        {% for choice in answer.question.choices.all %}
+
+            {% if choice.is_correct %}
+                <li>{{ choice.text }}</li>
+            {% endif %}
+
+        {% endfor %}
+
+        </ul>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+<a
+    href="{% url 'quiz:list' %}"
+    class="btn btn-primary"
+>
+    Back to Quizzes
+</a>
+
+{% endblock %}

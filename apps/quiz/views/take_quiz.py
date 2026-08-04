@@ -13,14 +13,24 @@ class TakeQuizView(LoginRequiredMixin, View):
             pk=attempt_id,
             user=request.user,
         )
+        if attempt.status == "completed":
+            return redirect(
+                "quiz:result",
+                pk=attempt.pk,
+            )
         questions = list(
             attempt.questions.all()
         )
-        if question_no < 1 or question_no > len(questions):
+        answered_count = attempt.answers.count()
+        expected_question = answered_count + 1
+
+        if question_no != expected_question:
             return redirect(
-                "quiz:detail",
-                attempt.quiz.pk,
+                "quiz:take",
+                attempt_id=attempt.pk,
+                question_no=expected_question,
             )
+
         question = questions[question_no - 1]
         form = AnswerForm(
             question=question,
@@ -44,6 +54,11 @@ class TakeQuizView(LoginRequiredMixin, View):
             pk=attempt_id,
             user=request.user,
         )
+        if attempt.status == "completed":
+            return redirect(
+                "quiz:result",
+                pk=attempt.pk,
+            )
         questions = list(
             attempt.questions.all()
         )
@@ -79,8 +94,8 @@ class TakeQuizView(LoginRequiredMixin, View):
                 attempt,
             )
             return redirect(
-                "quiz:detail",
-                attempt.quiz.pk,
+                "quiz:result",
+                attempt.pk,
             )
         return redirect(
             "quiz:take",
