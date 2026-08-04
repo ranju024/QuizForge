@@ -8,6 +8,47 @@ My Attempts
 
 <h1>My Attempts</h1>
 
+<form method="get">
+
+    <input
+        type="text"
+        name="quiz"
+        placeholder="Search Quiz"
+        value="{{ request.GET.quiz }}"
+    >
+
+    <select name="status">
+
+        <option value="">
+            All
+        </option>
+
+        <option value="completed"
+            {% if request.GET.status == "completed" %}
+            selected
+            {% endif %}
+        >
+            Completed
+        </option>
+
+        <option value="in_progress"
+            {% if request.GET.status == "in_progress" %}
+            selected
+            {% endif %}
+        >
+            In Progress
+        </option>
+
+    </select>
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<br>
+
 <table border="1" cellpadding="8">
 
 <tr>
@@ -38,7 +79,7 @@ My Attempts
 {% if attempt.status == "completed" %}
 
 <a href="{% url 'quiz:result' attempt.pk %}">
-View Result
+View
 </a>
 
 {% else %}
@@ -56,9 +97,13 @@ Continue
 {% empty %}
 
 <tr>
+
 <td colspan="6">
+
 No attempts found.
+
 </td>
+
 </tr>
 
 {% endfor %}
@@ -70,17 +115,25 @@ No attempts found.
 <br>
 
 {% if page_obj.has_previous %}
+
 <a href="?page={{ page_obj.previous_page_number }}">
+
 Previous
+
 </a>
+
 {% endif %}
 
 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
 
 {% if page_obj.has_next %}
+
 <a href="?page={{ page_obj.next_page_number }}">
+
 Next
+
 </a>
+
 {% endif %}
 
 {% endif %}

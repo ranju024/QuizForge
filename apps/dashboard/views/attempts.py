@@ -10,8 +10,14 @@ class MyAttemptsView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return (
+        queryset = (
             QuizAttempt.objects.filter(user=self.request.user, 
             ).select_related("quiz").order_by("-started_at")
         )
     
+        quiz = self.request.GET.get("quiz")
+        status = self.request.GET.get("status")
+
+        if quiz:
+            queryset = queryset.filter(status=status, )
+        return queryset
